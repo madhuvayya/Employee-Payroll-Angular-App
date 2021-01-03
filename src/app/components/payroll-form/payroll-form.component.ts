@@ -13,7 +13,8 @@ export class PayrollFormComponent implements OnInit {
   selectedSalary: number = 400000;
   errorText: string;
   dateError: string;
-  employeePayrollData = {    
+  employeePayrollObj = {
+            id: '',    
             name: '',
             gender: '',
             department: [],
@@ -96,16 +97,46 @@ export class PayrollFormComponent implements OnInit {
 
   save(){
     this.setEmployeePayrollData();
-    alert(JSON.stringify(this.employeePayrollData));
+    alert(JSON.stringify(this.employeePayrollObj));
+    this.createAndUpdateStorage();
   }
 
   setEmployeePayrollData() {
-    this.employeePayrollData.name = this.employeeForm.value.name;
-    this.employeePayrollData.gender = this.employeeForm.value.gender;
-    this.employeePayrollData.department = this.getSelectedDepartmentValues();
-    this.employeePayrollData.startDate = this.getStartDate();
-    this.employeePayrollData.salary = this.employeeForm.value.salary;
-    this.employeePayrollData.profilePic = this.employeeForm.value.profilePic;
-    this.employeePayrollData.notes = this.employeeForm.value.notes;                        
+    this.employeePayrollObj.id = this.createNewEmployeeId(); 
+    this.employeePayrollObj.name = this.employeeForm.value.name;
+    this.employeePayrollObj.gender = this.employeeForm.value.gender;
+    this.employeePayrollObj.department = this.getSelectedDepartmentValues();
+    this.employeePayrollObj.startDate = this.getStartDate();
+    this.employeePayrollObj.salary = this.employeeForm.value.salary;
+    this.employeePayrollObj.profilePic = this.employeeForm.value.profilePic;
+    this.employeePayrollObj.notes = this.employeeForm.value.notes;                        
+  }
+
+createAndUpdateStorage() {
+    let employeePayrollList = JSON.parse(localStorage.getItem("EmployeePayrollList"));
+    if(employeePayrollList){
+        let empPayrollData = employeePayrollList.
+                                  find(empData => empData.id == this.employeePayrollObj.id);
+        if(!empPayrollData){
+            employeePayrollList.push(this.employeePayrollObj);
+        } else {
+            const index = employeePayrollList
+                          .map(empData => empData.id)
+                          .indexOf(empPayrollData.id);
+            employeePayrollList.
+                          splice(index, 1, this.employeePayrollObj);
+        }
+    } else {
+        employeePayrollList = [this.employeePayrollObj]
+    }
+    localStorage.setItem("EmployeePayrollList", JSON.stringify(employeePayrollList))
+  }
+
+  createNewEmployeeId = () => {
+    let empID = localStorage.getItem("EmployeeID");
+    let num = 1;
+    empID = !empID ? num.toString() : (parseInt(empID)+1).toString();
+    localStorage.setItem("EmployeeID", empID);
+    return empID;
   }
 }
