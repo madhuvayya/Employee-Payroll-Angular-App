@@ -12,7 +12,16 @@ export class PayrollFormComponent implements OnInit {
   allDepartments: Array<string> = ["Hr","Sales","Finance", "Engineer", "Others"];
   selectedSalary: number = 400000;
   errorText: string;
-  dateError: string;               
+  dateError: string;
+  employeePayrollData = {    
+            name: '',
+            gender: '',
+            department: [],
+            salary: '',
+            startDate: '',
+            notes: '',
+            profilePic: ''
+  };               
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -75,9 +84,28 @@ export class PayrollFormComponent implements OnInit {
         this.dateError = '';         
   }
 
+  getSelectedDepartmentValues() {
+    let selectedFruitValues = [];
+    this.allDepartmentsArray.controls.forEach((control, i) => {
+      if (control.value) {
+        selectedFruitValues.push(this.allDepartments[i]);
+      }
+    });
+    return selectedFruitValues;
+  }  
+
   save(){
-    console.log(this.employeeForm.value);
-    alert(this.employeeForm.value.name);
-    console.log(this.checkStartDate());
+    this.setEmployeePayrollData();
+    alert(JSON.stringify(this.employeePayrollData));
+  }
+
+  setEmployeePayrollData() {
+    this.employeePayrollData.name = this.employeeForm.value.name;
+    this.employeePayrollData.gender = this.employeeForm.value.gender;
+    this.employeePayrollData.department = this.getSelectedDepartmentValues();
+    this.employeePayrollData.startDate = this.getStartDate();
+    this.employeePayrollData.salary = this.employeeForm.value.salary;
+    this.employeePayrollData.profilePic = this.employeeForm.value.profilePic;
+    this.employeePayrollData.notes = this.employeeForm.value.notes;                        
   }
 }

@@ -9,7 +9,7 @@
                 [ngClass]="{'form-control': true,
                             'is-invalid': !name.valid && name.touched,
                             'is-valid': name.valid}"
-             class="input" type="text" id="name" name="name" placeholder="Your name..." required><br/>           
+              formControlName="name" type="text" id="name" name="name" placeholder="Your name..." required><br/>           
         </div>
         <span *ngIf="name.errors?.required && name.touched" id="fnHelp" class="error-output">Field is required</span><br/>
         <span *ngIf="name.errors?.pattern && name.touched" id="fnHelp" class="error-output">Name should be atleast 3 characters.</span> 
