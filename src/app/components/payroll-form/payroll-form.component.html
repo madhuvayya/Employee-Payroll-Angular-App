@@ -1,66 +1,47 @@
+<div>
 <app-header></app-header>
 <div id="formId" class="form-content">
-    <form class="form" action="#" onreset="resetForm()" onsubmit="save(event)">
+    <form class="form" action="#" [formGroup]="employeeForm">
         <div class="form-head">Employee Payroll form</div>
         <div class="row-content">
             <label class="label text" for="name">Name</label>
-            <input class="input" type="text" id="name" name="name" placeholder="Your name..." required>
+            <input formControlName="name" class="input" type="text" id="name" name="name" placeholder="Your name..." required>
             <span class="text-error" for="text"></span>            
         </div>
         <div class="row-content">
-            <label class="label text" for="profile">Profile Image</label>
+            <label class="label text" for="profilePic">Profile Image</label>
             <div class="profile-radio-content">
-                <label>
-                    <input type="radio" id="profile1" name="profile" value="../assets/profile-images/Ellipse -3.png" required>
-                    <img class="profile" id="image1" src="../assets/profile-images/Ellipse -3.png">
-                </label>
-                <label>
-                    <input type="radio" id="profile2" name="profile" value="../assets/profile-images/Ellipse -1.png" required>
-                    <img class="profile" id="image2" src="../assets/profile-images/Ellipse -1.png">
-                </label>
-                <label>
-                    <input type="radio" id="profile3" name="profile" value="../assets/profile-images/Ellipse -8.png" required>
-                    <img class="profile" id="image3" src="../assets/profile-images/Ellipse -8.png">
-                </label>
-                <label>
-                    <input type="radio" id="profile4" name="profile" value="../assets/profile-images/Ellipse -7.png" required>
-                    <img class="profile" id="image4" src="../assets/profile-images/Ellipse -7.png">
+                <label *ngFor='let profile of profileArray'>
+                    <input type="radio" formControlName="profilePic" name="profilePic" [value]="profile.path" required>
+                    <img class="profile" [src]="profile.path">
                 </label>        
             </div>         
         </div>
         <div class="row-content">
             <label class="label text" for="gender">Gender</label>
             <div>
-                <input type="radio" id="male" name="gender" value="male">
+                <input formControlName="gender" type="radio" id="male" name="gender" value="male" required>
                 <label class="text" for="male">Male</label>
-                <input type="radio" id="female" name="gender" value="female">
+                <input formControlName="gender" type="radio" id="female" name="gender" value="female" required>
                 <label class="text" for="female">Female</label>         
             </div>
         </div>
         <div class="row-content">
             <label class="label text" for="department">Department</label>
-            <div>
-                <input class="checkbox" type="checkbox" id="hr" name="department" value="HR">
-                <label class="text" for="hr">HR</label>
-                <input class="checkbox" type="checkbox" id="sales" name="department" value="Sales">
-                <label class="text" for="sales">Sales</label>
-                <input class="checkbox" type="checkbox" id="finance" name="department" value="Finance">
-                <label class="text" for="finance">Finance</label>
-                <input class="checkbox" type="checkbox" id="engineer" name="department" value="Engineer">
-                <label class="text" for="engineer">Engineer</label>
-                <input class="checkbox" type="checkbox" id="others" name="department" value="Others">
-                <label class="text" for="others">Others</label> 
+            <div *ngFor="let control of allDepartmentsArray.controls; let i = index;">
+                <input class="checkbox" type="checkbox" [formControl] = "control" id="{{allDepartments[i]}}">
+                <label for="{{allDepartments[i]}}">{{allDepartments[i]}}</label>
             </div>
         </div>
         <div class="row-content">
             <label class="label text" for="salary">Choose salary:</label>
-            <input class="input" type="range" id="salary" min="300000" max="500000" step="100" value="400000">
+            <input formControlName="salary" class="input" type="range" id="salary" min="300000" max="500000" step="100" value="400000">
             <output class="salary-output text" for="salary">400000</output>         
         </div>
         <div class="row-content">
             <label class="label text" for="startDate">Start Date</label>
             <div id="date">
-                <select id="day" name="Day">
+                <select formControlName="day" id="day" name="Day">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -93,21 +74,21 @@
                     <option value="30">30</option>        
                     <option value="31">31</option>                        
                 </select>
-                <select id="month" name="Month">
+                <select formControlName="month" id="month" name="Month">
                     <option value="Jan">January</option>
                     <option value="Feb">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
+                    <option value="Mar">March</option>
+                    <option value="Apr">April</option>
                     <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
+                    <option value="Jun">June</option>
+                    <option value="Jul">July</option>
                     <option value="Aug">August</option>
                     <option value="Sep">September</option>
                     <option value="Oct">October</option>
                     <option value="Nov">November</option>
                     <option value="Dec">December</option>
                   </select>
-                <select id="year" name="Year">
+                <select formControlName="year" id="year" name="Year">
                     <option value="2020">2020</option>
                     <option value="2019">2019</option>
                     <option value="2018">2018</option>                        
@@ -117,7 +98,7 @@
         </div>
         <div class="row-content">
             <label class="label text" for="notes">Notes</label>
-            <textarea class="input" id="notes" name="notes" placeholder="Add notes.." style="height: 60px;"></textarea>         
+            <textarea formControlName="notes" class="input" id="notes" name="notes" placeholder="Add notes.." style="height: 60px;"></textarea>         
         </div>
         <div class="buttonParent">
             <a href="./home.html" class="resetButton button cancelButton">Cancel</a>
@@ -127,4 +108,5 @@
             </div>
         </div>
     </form>
+</div>
 </div>
