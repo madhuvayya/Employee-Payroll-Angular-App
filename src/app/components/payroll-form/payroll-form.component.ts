@@ -9,7 +9,8 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 export class PayrollFormComponent implements OnInit {
   profileArray: any[];
   employeeForm: any;
-  allDepartments: Array<string> = ["Hr","Sales","Finance", "Engineer", "Others"];               
+  allDepartments: Array<string> = ["Hr","Sales","Finance", "Engineer", "Others"];
+  selectedSalary: number = 400000;               
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -41,5 +42,9 @@ export class PayrollFormComponent implements OnInit {
 
   get allDepartmentsArray() {
     return <FormArray>this.employeeForm.get('department');
+  }
+
+  onSalaryChange() {
+    this.selectedSalary = this.employeeForm.value.salary;
   }
 }
