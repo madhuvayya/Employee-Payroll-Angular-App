@@ -127,14 +127,14 @@ select {
 }
 
 .submitButton:hover {
-    background-color: #82A70C;
+    background-color: #84867c;
 }
 
-error-output {
-    margin-left: 10px;
-    font-size: 12px;
+.error-output {
+    font-size: 15px;
     font-style: italic;
     color: red;
+    text-align: center;
 }
 
 @media only screen and (max-width: 960px) {

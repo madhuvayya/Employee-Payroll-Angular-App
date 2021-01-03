@@ -1,18 +1,24 @@
 <div>
 <app-header></app-header>
 <div id="formId" class="form-content">
-    <form class="form" action="#" [formGroup]="employeeForm">
+    <form class="form" action="#" [formGroup]="employeeForm" (ngSubmit)="save()">
         <div class="form-head">Employee Payroll form</div>
+        <div class="error-output">{{this.errorText}}</div>
         <div class="row-content">
             <label class="label text" for="name">Name</label>
-            <input formControlName="name" class="input" type="text" id="name" name="name" placeholder="Your name..." required>
-            <span class="text-error" for="text"></span>            
+            <input formControlName="name"
+                [ngClass]="{'form-control': true,
+                            'is-invalid': !name.valid && name.touched,
+                            'is-valid': name.valid}"
+             class="input" type="text" id="name" name="name" placeholder="Your name..." required><br/>           
         </div>
+        <span *ngIf="name.errors?.required && name.touched" id="fnHelp" class="error-output">Field is required</span><br/>
+        <span *ngIf="name.errors?.pattern && name.touched" id="fnHelp" class="error-output">Name should be atleast 3 characters.</span> 
         <div class="row-content">
             <label class="label text" for="profilePic">Profile Image</label>
             <div class="profile-radio-content">
                 <label *ngFor='let profile of profileArray'>
-                    <input type="radio" formControlName="profilePic" name="profilePic" [value]="profile.path" required>
+                    <input type="radio" formControlName="profilePic" name="profilePic" [value]="profile.path" >
                     <img class="profile" [src]="profile.path">
                 </label>        
             </div>         
@@ -20,9 +26,9 @@
         <div class="row-content">
             <label class="label text" for="gender">Gender</label>
             <div>
-                <input formControlName="gender" type="radio" id="male" name="gender" value="male" required>
+                <input formControlName="gender" type="radio" id="male" name="gender" value="male" >
                 <label class="text" for="male">Male</label>
-                <input formControlName="gender" type="radio" id="female" name="gender" value="female" required>
+                <input formControlName="gender" type="radio" id="female" name="gender" value="female">
                 <label class="text" for="female">Female</label>         
             </div>
         </div>
