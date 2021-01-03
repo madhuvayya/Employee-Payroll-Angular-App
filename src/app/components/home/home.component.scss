@@ -46,6 +46,7 @@
     outline: none;
     cursor: pointer;
     text-decoration: none;
+    display: flex;
 }
 
 .table-main {
@@ -79,7 +80,7 @@ th {
     border: 0px solid #dddddd;
 }
 
-tr:not(:first-child) {
+tr {
     background: #ffffff 0% 0% no-repeat padding-box;
     border: 1px solid #e3e3e3;
     border-radius: 3px;
