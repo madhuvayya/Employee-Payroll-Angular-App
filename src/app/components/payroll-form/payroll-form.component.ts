@@ -99,6 +99,7 @@ export class PayrollFormComponent implements OnInit {
     this.setEmployeePayrollData();
     alert(JSON.stringify(this.employeePayrollObj));
     this.createAndUpdateStorage();
+    this.employeeForm.reset();
   }
 
   setEmployeePayrollData() {
