@@ -11,7 +11,8 @@ export class PayrollFormComponent implements OnInit {
   employeeForm: any;
   allDepartments: Array<string> = ["Hr","Sales","Finance", "Engineer", "Others"];
   selectedSalary: number = 400000;
-  errorText: string;               
+  errorText: string;
+  dateError: string;               
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -24,6 +25,7 @@ export class PayrollFormComponent implements OnInit {
       day: ['1',Validators.required],
       month: ['Jan',Validators.required],
       year: ['2020',Validators.required],
+      startDate: [],
       notes: [],
       profilePic:['',Validators.required]
     });
@@ -45,6 +47,10 @@ export class PayrollFormComponent implements OnInit {
     return this.employeeForm.get('name');
   }
 
+  get profilePic() {
+    return this.employeeForm.get('profilePic');
+  }
+
   get allDepartmentsArray() {
     return <FormArray>this.employeeForm.get('department');
   }
@@ -53,8 +59,25 @@ export class PayrollFormComponent implements OnInit {
     this.selectedSalary = this.employeeForm.value.salary;
   }
 
+  getStartDate() {
+    return this.employeeForm.value.day+" "+this.employeeForm.value.month+" "+this.employeeForm.value.year;
+  }
+
+  checkStartDate() {
+    let startDate = new Date(Date.parse(this.getStartDate()));
+    let now = new Date();
+    if(startDate > now) 
+        this.dateError = 'Start Date is a Future Date!';
+    var diff = Math.abs(now.getTime() - startDate.getTime());
+    if ( diff / (1000 * 60 * 60 * 24) > 30)
+        this.dateError = 'Start Date is Beyond 30 Days';
+    else
+        this.dateError = '';         
+  }
+
   save(){
     console.log(this.employeeForm.value);
     alert(this.employeeForm.value.name);
+    console.log(this.checkStartDate());
   }
 }

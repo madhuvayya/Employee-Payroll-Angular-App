@@ -3,7 +3,6 @@
 <div id="formId" class="form-content">
     <form class="form" action="#" [formGroup]="employeeForm" (ngSubmit)="save()">
         <div class="form-head">Employee Payroll form</div>
-        <div class="error-output">{{this.errorText}}</div>
         <div class="row-content">
             <label class="label text" for="name">Name</label>
             <input formControlName="name"
@@ -46,8 +45,8 @@
         </div>
         <div class="row-content">
             <label class="label text" for="startDate">Start Date</label>
-            <div id="date">
-                <select formControlName="day" id="day" name="Day">
+            <div id="date" (change)="checkStartDate()">
+                <select formControlName="day" id="day" name="day">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -80,7 +79,7 @@
                     <option value="30">30</option>        
                     <option value="31">31</option>                        
                 </select>
-                <select formControlName="month" id="month" name="Month">
+                <select formControlName="month" id="month" name="month">
                     <option value="Jan">January</option>
                     <option value="Feb">February</option>
                     <option value="Mar">March</option>
@@ -94,12 +93,12 @@
                     <option value="Nov">November</option>
                     <option value="Dec">December</option>
                   </select>
-                <select formControlName="year" id="year" name="Year">
+                <select formControlName="year" id="year" name="year">
                     <option value="2020">2020</option>
                     <option value="2019">2019</option>
                     <option value="2018">2018</option>                        
                 </select>
-                <span class="date-error" for="text"></span>        
+                <span class="error-output" for="text">{{this.dateError}}</span>        
             </div>    
         </div>
         <div class="row-content">
