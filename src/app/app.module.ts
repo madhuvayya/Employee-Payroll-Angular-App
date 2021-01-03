@@ -6,12 +6,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { PayrollFormComponent } from './components/payroll-form/payroll-form.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    PayrollFormComponent
+    PayrollFormComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
