@@ -7,7 +7,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-    empPayrollListLocal: Array<any> = [
+    empCount: number;
+    empPayrollList: Array<any> = [
         {
             _name: 'Narayan Mahadevan',
             _gender: 'male',
@@ -36,6 +37,12 @@ export class HomeComponent implements OnInit {
       ];        
   constructor(private router: Router) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.processEmployeePayrollDataResponse();
+  }
+    
+  processEmployeePayrollDataResponse() {
+    this.empCount = this.empPayrollList.length; 
+    localStorage.removeItem('editEmp');  
   }
 }

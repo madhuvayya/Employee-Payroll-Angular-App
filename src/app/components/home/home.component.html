@@ -4,7 +4,7 @@
     <div class="header-content">
         <div class="emp-detail-text">
             Employee Details
-            <div class="emp-count">10</div>
+            <div class="emp-count">{{ this.empCount }}</div>
         </div>
         <a routerLink="/payroll-form" class="add-button">
             <img src="../../../assets/icons/add-24px.svg" alt="">Add User 
@@ -24,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let empPayroll of empPayrollListLocal">
+                <tr *ngFor="let empPayroll of empPayrollList">
                     <td>
                         <img class="profile" alt="" src="{{ empPayroll._profilePic }}">
                     </td>
