@@ -26,17 +26,17 @@
             <tbody>
                 <tr *ngFor="let empPayroll of empPayrollList">
                     <td>
-                        <img class="profile" alt="" src="{{ empPayroll._profilePic }}">
+                        <img class="profile" alt="" src="{{ empPayroll.profilePic }}">
                     </td>
-                    <td>{{ empPayroll._name }}</td>
-                    <td>Male</td>
+                    <td>{{ empPayroll.name }}</td>
+                    <td>{{ empPayroll.gender }}</td>
                     <td>
-                        <label *ngFor="let department of empPayroll._department">
+                        <label *ngFor="let department of empPayroll.department">
                             <div class="dept-label">{{ department }}</div>
                         </label>    
                     </td>
-                    <td>{{ empPayroll._salary }}</td>
-                    <td>{{ empPayroll._startDate }}</td>
+                    <td>{{ empPayroll.salary }}</td>
+                    <td>{{ empPayroll.startDate }}</td>
                     <td>
                         <img id="{{ empPayroll._id }}" onclick="remove(this)" alt="delete" src="../../../assets/icons/delete-black-18dp.svg">
                         <img id="{{ empPayroll._id }}" onclick="update(this)" alt="edit" src="../../../assets/icons/create-black-18dp.svg">                    
