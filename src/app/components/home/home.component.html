@@ -39,7 +39,7 @@
                     <td>{{ empPayroll.startDate }}</td>
                     <td>
                         <img id="{{ empPayroll.id }}" (click)="remove($event)" alt="delete" src="../../../assets/icons/delete-black-18dp.svg">
-                        <img id="{{ empPayroll._id }}"  alt="edit" src="../../../assets/icons/create-black-18dp.svg">                    
+                        <img id="{{ empPayroll._id }}"  routerLink="/payroll-form/{{ empPayroll.id }}" alt="edit" src="../../../assets/icons/create-black-18dp.svg">                    
                     </td>
                 </tr>
             </tbody>            

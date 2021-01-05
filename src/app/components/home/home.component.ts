@@ -33,4 +33,13 @@ export class HomeComponent implements OnInit {
         localStorage.setItem("EmployeePayrollList",JSON.stringify(this.empPayrollList));
         this.processEmployeePayrollDataResponse();              
     }
+
+    update($event) {
+        let id = $event.target.id;
+        console.log("Update method");   
+        let empPayrollData = this.empPayrollList.find(empData => empData.id == id);
+        if(!empPayrollData) return;
+        localStorage.setItem('editEmp' , JSON.stringify(empPayrollData));
+        // window.location.replace("../payroll-form/payroll-form.component.html");
+    }
 }

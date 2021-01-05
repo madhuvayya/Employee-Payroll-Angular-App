@@ -17,6 +17,10 @@ const routes: Routes = [
   {
     path: 'payroll-form',
     component: PayrollFormComponent
+  },
+  {
+    path: 'payroll-form/:id',
+    component: PayrollFormComponent
   }
 ]
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'payroll-form',
@@ -7,14 +8,15 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
   styleUrls: ['./payroll-form.component.scss']
 })
 export class PayrollFormComponent implements OnInit {
+  id: number;
   profileArray: any[];
   employeeForm: any;
   allDepartments: Array<string> = ["Hr","Sales","Finance", "Engineer", "Others"];
-  selectedSalary: number = 400000;
+  selectedSalary: number;
   errorText: string;
   dateError: string;
   employeePayrollObj = {
-            id: '',    
+            id: null,    
             name: '',
             gender: '',
             department: [],
@@ -24,14 +26,16 @@ export class PayrollFormComponent implements OnInit {
             profilePic: ''
   };               
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private router:ActivatedRoute , private formBuilder: FormBuilder) {
+    this.checkForUpdate(); 
+   }
 
   ngOnInit(): void {
     this.employeeForm = this.formBuilder.group({
       name: ['',[Validators.required, Validators.pattern('^[A-Z]{1}[a-zA-Z\\s]{2,}$')]],
       gender: ['',Validators.required],
       department: this.addDepartmentControls(),
-      salary: ['',Validators.required],
+      salary: [400000, Validators.required],
       day: ['1',Validators.required],
       month: ['Jan',Validators.required],
       year: ['2020',Validators.required],
@@ -44,6 +48,8 @@ export class PayrollFormComponent implements OnInit {
                           {path:'../assets/profile-images/Ellipse -8.png'},
                           {path:'../assets/profile-images/Ellipse -7.png' }
                       ];
+    this.checkForUpdate();
+    this.onSalaryChange();                                  
   }
 
   addDepartmentControls() {
@@ -103,7 +109,7 @@ export class PayrollFormComponent implements OnInit {
   }
 
   setEmployeePayrollData() {
-    this.employeePayrollObj.id = this.createNewEmployeeId(); 
+    this.employeePayrollObj.id = this.id ? this.id : this.createNewEmployeeId(); 
     this.employeePayrollObj.name = this.employeeForm.value.name;
     this.employeePayrollObj.gender = this.employeeForm.value.gender;
     this.employeePayrollObj.department = this.getSelectedDepartmentValues();
@@ -139,5 +145,47 @@ createAndUpdateStorage() {
     empID = !empID ? num.toString() : (parseInt(empID)+1).toString();
     localStorage.setItem("EmployeeID", empID);
     return empID;
+  }
+
+  checkForUpdate() {
+    this.id  = this.router.snapshot.params.id;
+    if(this.id === null || this.id === undefined){
+        return;
+    }
+    let employeePayrollList = JSON.parse(localStorage.getItem("EmployeePayrollList"));
+    let empPayrollData;
+    if(employeePayrollList){
+        empPayrollData = employeePayrollList
+                                .find(empData => empData.id == this.id);                        
+    } else {
+      return;
+    }
+    this.setForm(empPayrollData);
+  }
+
+  setForm(empPayrollData:any) {
+    let date = empPayrollData.startDate.split(" ");
+    this.employeeForm = this.formBuilder.group({
+      name: empPayrollData.name,
+      gender: empPayrollData.gender,
+      department: this.addDepartmentControls(),
+      salary: empPayrollData.salary,
+      day: date[0],
+      month: date[1],
+      year: date[2],
+      notes: empPayrollData.notes,
+      profilePic: empPayrollData.profilePic
+    });
+    this.setSelectedDepartmentValues(empPayrollData.department);
+  }
+
+  setSelectedDepartmentValues(departments:any[]) {
+    departments.forEach( item => {
+    this.allDepartmentsArray.controls.forEach((control, i) => {
+      if (this.allDepartments[i] == item) {
+        control.setValue(true);
+      }
+      })
+    })
   }
 }
