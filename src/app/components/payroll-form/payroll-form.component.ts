@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
+import { SiteProperties } from '../../site_properties'
+import { HttpService } from '../../services/httpservices.service'
+
 @Component({
   selector: 'payroll-form',
   templateUrl: './payroll-form.component.html',
@@ -15,19 +18,19 @@ export class PayrollFormComponent implements OnInit {
   selectedSalary: number;
   errorText: string;
   dateError: string;
+  empData: any;
   employeePayrollObj = {
-            id: null,    
+            employeeId: null,    
             name: '',
             gender: '',
             department: [],
             salary: '',
             startDate: '',
-            notes: '',
+            note: '',
             profilePic: ''
   };               
 
-  constructor(private router:ActivatedRoute , private formBuilder: FormBuilder) {
-    this.checkForUpdate(); 
+  constructor(private router:ActivatedRoute , private formBuilder: FormBuilder, private httpService:HttpService) {
    }
 
   ngOnInit(): void {
@@ -40,7 +43,7 @@ export class PayrollFormComponent implements OnInit {
       month: ['Jan',Validators.required],
       year: ['2020',Validators.required],
       startDate: [],
-      notes: [],
+      note: [],
       profilePic:['',Validators.required]
     });
     this.profileArray=[   {path:"../assets/profile-images/Ellipse -3.png"},
@@ -48,7 +51,7 @@ export class PayrollFormComponent implements OnInit {
                           {path:'../assets/profile-images/Ellipse -8.png'},
                           {path:'../assets/profile-images/Ellipse -7.png' }
                       ];
-    this.checkForUpdate();
+    this.checkForUpdate(); 
     this.onSalaryChange();                                  
   }
 
@@ -104,39 +107,56 @@ export class PayrollFormComponent implements OnInit {
   save(){
     this.setEmployeePayrollData();
     alert(JSON.stringify(this.employeePayrollObj));
-    this.createAndUpdateStorage();
-    this.employeeForm.reset();
+    if (SiteProperties.use_local_storage){
+      this.createAndUpdateStorage();
+      this.employeeForm.reset();
+    } else {
+      this.createOrUpdateEmployeePayroll();
+    }
   }
 
   setEmployeePayrollData() {
-    this.employeePayrollObj.id = this.id ? this.id : this.createNewEmployeeId(); 
+    this.employeePayrollObj.employeeId = this.id ? this.id : this.createNewEmployeeId(); 
     this.employeePayrollObj.name = this.employeeForm.value.name;
     this.employeePayrollObj.gender = this.employeeForm.value.gender;
     this.employeePayrollObj.department = this.getSelectedDepartmentValues();
     this.employeePayrollObj.startDate = this.getStartDate();
     this.employeePayrollObj.salary = this.employeeForm.value.salary;
     this.employeePayrollObj.profilePic = this.employeeForm.value.profilePic;
-    this.employeePayrollObj.notes = this.employeeForm.value.notes;                        
+    this.employeePayrollObj.note = this.employeeForm.value.note;                        
   }
 
 createAndUpdateStorage() {
     let employeePayrollList = JSON.parse(localStorage.getItem("EmployeePayrollList"));
     if(employeePayrollList){
         let empPayrollData = employeePayrollList.
-                                  find(empData => empData.id == this.employeePayrollObj.id);
+                                  find(empData => empData.employeeId == this.employeePayrollObj.employeeId);
         if(!empPayrollData){
             employeePayrollList.push(this.employeePayrollObj);
         } else {
             const index = employeePayrollList
-                          .map(empData => empData.id)
-                          .indexOf(empPayrollData.id);
-            employeePayrollList.
-                          splice(index, 1, this.employeePayrollObj);
+                          .map(empData => empData.employeeId)
+                          .indexOf(empPayrollData.employeeId);
+            employeePayrollList.splice(index, 1, this.employeePayrollObj);
         }
     } else {
         employeePayrollList = [this.employeePayrollObj]
     }
     localStorage.setItem("EmployeePayrollList", JSON.stringify(employeePayrollList))
+  }
+
+  createOrUpdateEmployeePayroll() {
+    if(this.id === null || this.id === undefined){
+      this.httpService.saveEmployeePayrollData(this.employeePayrollObj)
+                      .subscribe((response) =>{
+                          console.log(response.message);
+                      });
+    } else {
+      this.httpService.updateEmployeePayrollData(this.employeePayrollObj, this.id)
+                      .subscribe((response) => {
+                          console.log(response.message);    
+                      });
+    }
   }
 
   createNewEmployeeId = () => {
@@ -152,19 +172,33 @@ createAndUpdateStorage() {
     if(this.id === null || this.id === undefined){
         return;
     }
-    let employeePayrollList = JSON.parse(localStorage.getItem("EmployeePayrollList"));
+    let employeePayrollList: any[];
     let empPayrollData;
-    if(employeePayrollList){
+    if(SiteProperties.use_local_storage) { 
+      employeePayrollList = JSON.parse(localStorage.getItem("EmployeePayrollList"));
+      if(employeePayrollList){
         empPayrollData = employeePayrollList
-                                .find(empData => empData.id == this.id);                        
+                              .find(empData => empData.employeeId == this.id);
+        this.setForm(empPayrollData);
+      } else {
+          return;
+      }
     } else {
-      return;
+      this.httpService.getEmployeePayrollDataById(this.id)
+                      .subscribe((response) =>{
+                          this.empData = response.data;
+                          this.setForm(this.empData);
+                        });
     }
-    this.setForm(empPayrollData);
   }
 
   setForm(empPayrollData:any) {
-    let date = empPayrollData.startDate.split(" ");
+    let date: any;
+    if(SiteProperties.use_local_storage){
+      date = empPayrollData.startDate.split(" ");
+    } else {
+      date = this.stringifyDate(empPayrollData.startDate).split(" ");
+    }
     this.employeeForm = this.formBuilder.group({
       name: empPayrollData.name,
       gender: empPayrollData.gender,
@@ -173,7 +207,7 @@ createAndUpdateStorage() {
       day: date[0],
       month: date[1],
       year: date[2],
-      notes: empPayrollData.notes,
+      note: empPayrollData.note,
       profilePic: empPayrollData.profilePic
     });
     this.setSelectedDepartmentValues(empPayrollData.department);
@@ -188,4 +222,10 @@ createAndUpdateStorage() {
       })
     })
   }
+
+  stringifyDate = (date: string) => {
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    const newDate = !date ? "undefind" : new Date(Date.parse(date)).toLocaleDateString('en-GB',options);
+    return newDate;    
+}
 }
