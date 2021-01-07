@@ -28,18 +28,38 @@ export class PayrollFormComponent implements OnInit {
             startDate: '',
             note: '',
             profilePic: ''
-  };               
+  };
+  monthMap = new Map([
+    [ "01", "Jan" ],
+    [ "02", "Feb" ],
+    [ "03", "Mar" ],
+    [ "04", "Apr" ],
+    [ "05", "May" ],
+    [ "06", "Jun" ],
+    [ "07", "Jul" ],
+    [ "08", "Aug" ],
+    [ "09", "Sep" ],
+    [ "10", "Oct" ],
+    [ "11", "Nov" ],
+    [ "12", "Dec" ]
+  ]);               
 
   constructor(private router:ActivatedRoute , private formBuilder: FormBuilder, private httpService:HttpService) {
    }
 
   ngOnInit(): void {
+    this.resetFrom();
+    this.checkForUpdate(); 
+    this.onSalaryChange();                                  
+  }
+
+  resetFrom() {
     this.employeeForm = this.formBuilder.group({
       name: ['',[Validators.required, Validators.pattern('^[A-Z]{1}[a-zA-Z\\s]{2,}$')]],
       gender: ['',Validators.required],
       department: this.addDepartmentControls(),
       salary: [400000, Validators.required],
-      day: ['1',Validators.required],
+      day: ['01',Validators.required],
       month: ['Jan',Validators.required],
       year: ['2020',Validators.required],
       startDate: [],
@@ -51,8 +71,6 @@ export class PayrollFormComponent implements OnInit {
                           {path:'../assets/profile-images/Ellipse -8.png'},
                           {path:'../assets/profile-images/Ellipse -7.png' }
                       ];
-    this.checkForUpdate(); 
-    this.onSalaryChange();                                  
   }
 
   addDepartmentControls() {
@@ -108,15 +126,19 @@ export class PayrollFormComponent implements OnInit {
     this.setEmployeePayrollData();
     alert(JSON.stringify(this.employeePayrollObj));
     if (SiteProperties.use_local_storage){
+      console.log("Using local storage");
       this.createAndUpdateStorage();
       this.employeeForm.reset();
     } else {
+      console.log("Using backend");
       this.createOrUpdateEmployeePayroll();
     }
   }
 
   setEmployeePayrollData() {
-    this.employeePayrollObj.employeeId = this.id ? this.id : this.createNewEmployeeId(); 
+    if(this.id === null || this.id === undefined){
+      this.employeePayrollObj.employeeId = this.createNewEmployeeId();
+    } 
     this.employeePayrollObj.name = this.employeeForm.value.name;
     this.employeePayrollObj.gender = this.employeeForm.value.gender;
     this.employeePayrollObj.department = this.getSelectedDepartmentValues();
@@ -194,19 +216,28 @@ createAndUpdateStorage() {
 
   setForm(empPayrollData:any) {
     let date: any;
+    let month: any;
+    let day: any;
+    let year: any;
     if(SiteProperties.use_local_storage){
       date = empPayrollData.startDate.split(" ");
+      month = date[1];
+      year = date[2];
+      day = date[0];
     } else {
-      date = this.stringifyDate(empPayrollData.startDate).split(" ");
+      date = empPayrollData.startDate.split("-");
+      month = this.monthMap.get(date[1]);
+      year = date[0];
+      day = date[2];
     }
     this.employeeForm = this.formBuilder.group({
       name: empPayrollData.name,
       gender: empPayrollData.gender,
       department: this.addDepartmentControls(),
       salary: empPayrollData.salary,
-      day: date[0],
-      month: date[1],
-      year: date[2],
+      day: day,
+      month: month,
+      year: year,
       note: empPayrollData.note,
       profilePic: empPayrollData.profilePic
     });
@@ -222,10 +253,4 @@ createAndUpdateStorage() {
       })
     })
   }
-
-  stringifyDate = (date: string) => {
-    const options = { day: 'numeric', month: 'short', year: 'numeric' };
-    const newDate = !date ? "undefind" : new Date(Date.parse(date)).toLocaleDateString('en-GB',options);
-    return newDate;    
-}
 }
